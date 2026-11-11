@@ -1,0 +1,183 @@
+newman
+
+Lab 05 — Student Registration API
+
+❏ 01 Happy path — B231234567 бүртгэх
+↳ Setup student
+  PUT http://localhost:3000/students/B231234567 [200 OK, 178B, 9ms]
+  ✓  Student setup: HTTP 200
+  ✓  Student setup: result OK
+
+↳ Setup course
+  PUT http://localhost:3000/courses/CS313 [200 OK, 178B, 1ms]
+  ✓  Course setup: HTTP 200
+  ✓  Course setup: result OK
+
+↳ POST registration
+  POST http://localhost:3000/registrations [201 Created, 202B, 0µs]
+  ✓  Registration: expected HTTP status
+  ✓  Registration: expected result and numeric ID on success
+
+❏ 02 Байхгүй оюутан
+↳ Setup student
+  PUT http://localhost:3000/students/SETUP-NO-STUDENT [200 OK, 178B, 1ms]
+  ✓  Student setup: HTTP 200
+  ✓  Student setup: result OK
+
+↳ Setup course
+  PUT http://localhost:3000/courses/CS401 [200 OK, 178B, 1ms]
+  ✓  Course setup: HTTP 200
+  ✓  Course setup: result OK
+
+↳ POST registration
+  POST http://localhost:3000/registrations [200 OK, 192B, 0µs]
+  ✓  Registration: expected HTTP status
+  ✓  Registration: expected result and numeric ID on success
+
+❏ 03 Идэвхгүй оюутан
+↳ Setup student
+  PUT http://localhost:3000/students/B231234568 [200 OK, 178B, 1ms]
+  ✓  Student setup: HTTP 200
+  ✓  Student setup: result OK
+
+↳ Setup course
+  PUT http://localhost:3000/courses/CS402 [200 OK, 178B, 1ms]
+  ✓  Course setup: HTTP 200
+  ✓  Course setup: result OK
+
+↳ POST registration
+  POST http://localhost:3000/registrations [200 OK, 198B, 1ms]
+  ✓  Registration: expected HTTP status
+  ✓  Registration: expected result and numeric ID on success
+
+❏ 04 Байхгүй хичээл
+↳ Setup student
+  PUT http://localhost:3000/students/B231234569 [200 OK, 178B, 1ms]
+  ✓  Student setup: HTTP 200
+  ✓  Student setup: result OK
+
+↳ Setup course
+  PUT http://localhost:3000/courses/CS403 [200 OK, 178B, 1ms]
+  ✓  Course setup: HTTP 200
+  ✓  Course setup: result OK
+
+↳ POST registration
+  POST http://localhost:3000/registrations [200 OK, 191B, 1ms]
+  ✓  Registration: expected HTTP status
+  ✓  Registration: expected result and numeric ID on success
+
+❏ 05 Урьдач нөхцөлийг огт үзээгүй
+↳ Setup student
+  PUT http://localhost:3000/students/B231234570 [200 OK, 178B, 1ms]
+  ✓  Student setup: HTTP 200
+  ✓  Student setup: result OK
+
+↳ Setup course
+  PUT http://localhost:3000/courses/CS404 [200 OK, 178B, 0µs]
+  ✓  Course setup: HTTP 200
+  ✓  Course setup: result OK
+
+↳ POST registration
+  POST http://localhost:3000/registrations [200 OK, 215B, 1ms]
+  ✓  Registration: expected HTTP status
+  ✓  Registration: expected result and numeric ID on success
+
+❏ 06 Урьдач нөхцөлийн заримыг л үзсэн
+↳ Setup student
+  PUT http://localhost:3000/students/B231234574 [200 OK, 178B, 1ms]
+  ✓  Student setup: HTTP 200
+  ✓  Student setup: result OK
+
+↳ Setup course
+  PUT http://localhost:3000/courses/CS409 [200 OK, 178B, 0µs]
+  ✓  Course setup: HTTP 200
+  ✓  Course setup: result OK
+
+↳ POST registration
+  POST http://localhost:3000/registrations [200 OK, 215B, 0µs]
+  ✓  Registration: expected HTTP status
+  ✓  Registration: expected result and numeric ID on success
+
+❏ 07 Давхар алдаа — идэвхгүй оюутан ба байхгүй хичээл
+↳ Setup student
+  PUT http://localhost:3000/students/B231234571 [200 OK, 178B, 1ms]
+  ✓  Student setup: HTTP 200
+  ✓  Student setup: result OK
+
+↳ Setup course
+  PUT http://localhost:3000/courses/CS405 [200 OK, 178B, 0µs]
+  ✓  Course setup: HTTP 200
+  ✓  Course setup: result OK
+
+↳ POST registration
+  POST http://localhost:3000/registrations [200 OK, 198B, 0µs]
+  ✓  Registration: expected HTTP status
+  ✓  Registration: expected result and numeric ID on success
+
+❏ 08 Давхар алдаа — байхгүй оюутан ба байхгүй хичээл
+↳ Setup student
+  PUT http://localhost:3000/students/SETUP-DOUBLE-ERROR [200 OK, 178B, 1ms]
+  ✓  Student setup: HTTP 200
+  ✓  Student setup: result OK
+
+↳ Setup course
+  PUT http://localhost:3000/courses/CS406 [200 OK, 178B, 1ms]
+  ✓  Course setup: HTTP 200
+  ✓  Course setup: result OK
+
+↳ POST registration
+  POST http://localhost:3000/registrations [200 OK, 192B, 0µs]
+  ✓  Registration: expected HTTP status
+  ✓  Registration: expected result and numeric ID on success
+
+❏ 09 Хязгаар — studentID талбар дутуу
+↳ Setup student
+  PUT http://localhost:3000/students/B231234572 [200 OK, 178B, 1ms]
+  ✓  Student setup: HTTP 200
+  ✓  Student setup: result OK
+
+↳ Setup course
+  PUT http://localhost:3000/courses/CS407 [200 OK, 178B, 1ms]
+  ✓  Course setup: HTTP 200
+  ✓  Course setup: result OK
+
+↳ POST registration
+  POST http://localhost:3000/registrations [400 Bad Request, 202B, 1ms]
+  ✓  Registration: expected HTTP status
+  ✓  Registration: expected result and numeric ID on success
+
+❏ 10 Хязгаар — courseID талбар дутуу
+↳ Setup student
+  PUT http://localhost:3000/students/B231234573 [200 OK, 178B, 0µs]
+  ✓  Student setup: HTTP 200
+  ✓  Student setup: result OK
+
+↳ Setup course
+  PUT http://localhost:3000/courses/CS408 [200 OK, 178B, 1ms]
+  ✓  Course setup: HTTP 200
+  ✓  Course setup: result OK
+
+↳ POST registration
+  POST http://localhost:3000/registrations [400 Bad Request, 202B, 0µs]
+  ✓  Registration: expected HTTP status
+  ✓  Registration: expected result and numeric ID on success
+
+┌─────────────────────────┬─────────────────┬────────────────┐
+│                         │        executed │         failed │
+├─────────────────────────┼─────────────────┼────────────────┤
+│              iterations │               1 │              0 │
+├─────────────────────────┼─────────────────┼────────────────┤
+│                requests │              30 │              0 │
+├─────────────────────────┼─────────────────┼────────────────┤
+│            test-scripts │              30 │              0 │
+├─────────────────────────┼─────────────────┼────────────────┤
+│      prerequest-scripts │              30 │              0 │
+├─────────────────────────┼─────────────────┼────────────────┤
+│              assertions │              60 │              0 │
+├─────────────────────────┴─────────────────┴────────────────┤
+│ total run duration: 357ms                                  │
+├────────────────────────────────────────────────────────────┤
+│ total data received: 654B (approx)                         │
+├────────────────────────────────────────────────────────────┤
+│ average response time: 1ms [min: 1ms, max: 9ms, s.d.: 2ms] │
+└────────────────────────────────────────────────────────────┘

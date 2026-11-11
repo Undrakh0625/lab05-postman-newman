@@ -1,0 +1,1267 @@
+{
+  "info": {
+    "_postman_id": "b252270135-lab05-registration-api",
+    "name": "Lab 05 — Student Registration API (intentional oracle failure)",
+    "description": "Лекц 5-ын тест дизайны 9 төлөөлөх тохиолдол; folder бүр оюутан/хичээлээ өөрөө setup хийнэ.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Happy path — B231234567 бүртгэх",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('setupStudentID', \"B231234567\");",
+              "pm.variables.set('studentStatus', \"active\");",
+              "pm.variables.set('coursesTaken', \"[\\\"CS201\\\"]\");",
+              "pm.variables.set('setupCourseID', \"CS313\");",
+              "pm.variables.set('prerequisites', \"[\\\"CS201\\\"]\");",
+              "pm.variables.set('requestBody', \"{\\\"studentID\\\":\\\"B231234567\\\",\\\"courseID\\\":\\\"CS313\\\"}\");",
+              "pm.variables.set('expectedStatus', \"201\");",
+              "pm.variables.set('expectedResult', \"OK\");"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Setup student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/students/{{setupStudentID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"{{studentStatus}}\",\"coursesTaken\":{{coursesTaken}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Student setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Student setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/courses/{{setupCourseID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"prerequisites\":{{prerequisites}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Course setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Course setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{{requestBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration: intentionally wrong expected HTTP status', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Registration: expected result and numeric ID on success', function () { var body = pm.response.json(); pm.expect(body.result).to.eql(pm.variables.get('expectedResult')); if (body.result === 'OK') pm.expect(body.registrationID).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 Байхгүй оюутан",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('setupStudentID', \"SETUP-NO-STUDENT\");",
+              "pm.variables.set('studentStatus', \"active\");",
+              "pm.variables.set('coursesTaken', \"[]\");",
+              "pm.variables.set('setupCourseID', \"CS401\");",
+              "pm.variables.set('prerequisites', \"[]\");",
+              "pm.variables.set('requestBody', \"{\\\"studentID\\\":\\\"NO-STUDENT-01\\\",\\\"courseID\\\":\\\"CS401\\\"}\");",
+              "pm.variables.set('expectedStatus', \"200\");",
+              "pm.variables.set('expectedResult', \"ERROR_NO_STUDENT\");"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Setup student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/students/{{setupStudentID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"{{studentStatus}}\",\"coursesTaken\":{{coursesTaken}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Student setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Student setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/courses/{{setupCourseID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"prerequisites\":{{prerequisites}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Course setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Course setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{{requestBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration: expected HTTP status', function () { pm.response.to.have.status(Number(pm.variables.get('expectedStatus'))); });",
+                  "pm.test('Registration: expected result and numeric ID on success', function () { var body = pm.response.json(); pm.expect(body.result).to.eql(pm.variables.get('expectedResult')); if (body.result === 'OK') pm.expect(body.registrationID).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 Идэвхгүй оюутан",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('setupStudentID', \"B231234568\");",
+              "pm.variables.set('studentStatus', \"inactive\");",
+              "pm.variables.set('coursesTaken', \"[]\");",
+              "pm.variables.set('setupCourseID', \"CS402\");",
+              "pm.variables.set('prerequisites', \"[]\");",
+              "pm.variables.set('requestBody', \"{\\\"studentID\\\":\\\"B231234568\\\",\\\"courseID\\\":\\\"CS402\\\"}\");",
+              "pm.variables.set('expectedStatus', \"200\");",
+              "pm.variables.set('expectedResult', \"ERROR_INACTIVE_STUDENT\");"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Setup student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/students/{{setupStudentID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"{{studentStatus}}\",\"coursesTaken\":{{coursesTaken}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Student setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Student setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/courses/{{setupCourseID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"prerequisites\":{{prerequisites}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Course setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Course setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{{requestBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration: expected HTTP status', function () { pm.response.to.have.status(Number(pm.variables.get('expectedStatus'))); });",
+                  "pm.test('Registration: expected result and numeric ID on success', function () { var body = pm.response.json(); pm.expect(body.result).to.eql(pm.variables.get('expectedResult')); if (body.result === 'OK') pm.expect(body.registrationID).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 Байхгүй хичээл",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('setupStudentID', \"B231234569\");",
+              "pm.variables.set('studentStatus', \"active\");",
+              "pm.variables.set('coursesTaken', \"[]\");",
+              "pm.variables.set('setupCourseID', \"CS403\");",
+              "pm.variables.set('prerequisites', \"[]\");",
+              "pm.variables.set('requestBody', \"{\\\"studentID\\\":\\\"B231234569\\\",\\\"courseID\\\":\\\"NO-COURSE-01\\\"}\");",
+              "pm.variables.set('expectedStatus', \"200\");",
+              "pm.variables.set('expectedResult', \"ERROR_NO_COURSE\");"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Setup student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/students/{{setupStudentID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"{{studentStatus}}\",\"coursesTaken\":{{coursesTaken}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Student setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Student setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/courses/{{setupCourseID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"prerequisites\":{{prerequisites}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Course setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Course setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{{requestBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration: expected HTTP status', function () { pm.response.to.have.status(Number(pm.variables.get('expectedStatus'))); });",
+                  "pm.test('Registration: expected result and numeric ID on success', function () { var body = pm.response.json(); pm.expect(body.result).to.eql(pm.variables.get('expectedResult')); if (body.result === 'OK') pm.expect(body.registrationID).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 Урьдач нөхцөлийг огт үзээгүй",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('setupStudentID', \"B231234570\");",
+              "pm.variables.set('studentStatus', \"active\");",
+              "pm.variables.set('coursesTaken', \"[\\\"CS201\\\"]\");",
+              "pm.variables.set('setupCourseID', \"CS404\");",
+              "pm.variables.set('prerequisites', \"[\\\"CS301\\\"]\");",
+              "pm.variables.set('requestBody', \"{\\\"studentID\\\":\\\"B231234570\\\",\\\"courseID\\\":\\\"CS404\\\"}\");",
+              "pm.variables.set('expectedStatus', \"200\");",
+              "pm.variables.set('expectedResult', \"ERROR_PREREQUISITES\");"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Setup student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/students/{{setupStudentID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"{{studentStatus}}\",\"coursesTaken\":{{coursesTaken}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Student setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Student setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/courses/{{setupCourseID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"prerequisites\":{{prerequisites}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Course setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Course setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{{requestBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration: expected HTTP status', function () { pm.response.to.have.status(Number(pm.variables.get('expectedStatus'))); });",
+                  "pm.test('Registration: expected result and numeric ID on success', function () { var body = pm.response.json(); pm.expect(body.result).to.eql(pm.variables.get('expectedResult')); if (body.result === 'OK') pm.expect(body.registrationID).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 Урьдач нөхцөлийн заримыг л үзсэн",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('setupStudentID', \"B231234574\");",
+              "pm.variables.set('studentStatus', \"active\");",
+              "pm.variables.set('coursesTaken', \"[\\\"CS201\\\"]\");",
+              "pm.variables.set('setupCourseID', \"CS409\");",
+              "pm.variables.set('prerequisites', \"[\\\"CS101\\\",\\\"CS201\\\"]\");",
+              "pm.variables.set('requestBody', \"{\\\"studentID\\\":\\\"B231234574\\\",\\\"courseID\\\":\\\"CS409\\\"}\");",
+              "pm.variables.set('expectedStatus', \"200\");",
+              "pm.variables.set('expectedResult', \"ERROR_PREREQUISITES\");"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Setup student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/students/{{setupStudentID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"{{studentStatus}}\",\"coursesTaken\":{{coursesTaken}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Student setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Student setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/courses/{{setupCourseID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"prerequisites\":{{prerequisites}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Course setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Course setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{{requestBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration: expected HTTP status', function () { pm.response.to.have.status(Number(pm.variables.get('expectedStatus'))); });",
+                  "pm.test('Registration: expected result and numeric ID on success', function () { var body = pm.response.json(); pm.expect(body.result).to.eql(pm.variables.get('expectedResult')); if (body.result === 'OK') pm.expect(body.registrationID).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "07 Давхар алдаа — идэвхгүй оюутан ба байхгүй хичээл",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('setupStudentID', \"B231234571\");",
+              "pm.variables.set('studentStatus', \"inactive\");",
+              "pm.variables.set('coursesTaken', \"[]\");",
+              "pm.variables.set('setupCourseID', \"CS405\");",
+              "pm.variables.set('prerequisites', \"[]\");",
+              "pm.variables.set('requestBody', \"{\\\"studentID\\\":\\\"B231234571\\\",\\\"courseID\\\":\\\"NO-COURSE-02\\\"}\");",
+              "pm.variables.set('expectedStatus', \"200\");",
+              "pm.variables.set('expectedResult', \"ERROR_INACTIVE_STUDENT\");"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Setup student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/students/{{setupStudentID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"{{studentStatus}}\",\"coursesTaken\":{{coursesTaken}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Student setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Student setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/courses/{{setupCourseID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"prerequisites\":{{prerequisites}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Course setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Course setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{{requestBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration: expected HTTP status', function () { pm.response.to.have.status(Number(pm.variables.get('expectedStatus'))); });",
+                  "pm.test('Registration: expected result and numeric ID on success', function () { var body = pm.response.json(); pm.expect(body.result).to.eql(pm.variables.get('expectedResult')); if (body.result === 'OK') pm.expect(body.registrationID).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "08 Давхар алдаа — байхгүй оюутан ба байхгүй хичээл",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('setupStudentID', \"SETUP-DOUBLE-ERROR\");",
+              "pm.variables.set('studentStatus', \"active\");",
+              "pm.variables.set('coursesTaken', \"[]\");",
+              "pm.variables.set('setupCourseID', \"CS406\");",
+              "pm.variables.set('prerequisites', \"[]\");",
+              "pm.variables.set('requestBody', \"{\\\"studentID\\\":\\\"NO-STUDENT-02\\\",\\\"courseID\\\":\\\"NO-COURSE-03\\\"}\");",
+              "pm.variables.set('expectedStatus', \"200\");",
+              "pm.variables.set('expectedResult', \"ERROR_NO_STUDENT\");"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Setup student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/students/{{setupStudentID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"{{studentStatus}}\",\"coursesTaken\":{{coursesTaken}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Student setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Student setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/courses/{{setupCourseID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"prerequisites\":{{prerequisites}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Course setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Course setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{{requestBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration: expected HTTP status', function () { pm.response.to.have.status(Number(pm.variables.get('expectedStatus'))); });",
+                  "pm.test('Registration: expected result and numeric ID on success', function () { var body = pm.response.json(); pm.expect(body.result).to.eql(pm.variables.get('expectedResult')); if (body.result === 'OK') pm.expect(body.registrationID).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "09 Хязгаар — studentID талбар дутуу",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('setupStudentID', \"B231234572\");",
+              "pm.variables.set('studentStatus', \"active\");",
+              "pm.variables.set('coursesTaken', \"[]\");",
+              "pm.variables.set('setupCourseID', \"CS407\");",
+              "pm.variables.set('prerequisites', \"[]\");",
+              "pm.variables.set('requestBody', \"{\\\"courseID\\\":\\\"CS407\\\"}\");",
+              "pm.variables.set('expectedStatus', \"400\");",
+              "pm.variables.set('expectedResult', \"ERROR_BAD_REQUEST\");"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Setup student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/students/{{setupStudentID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"{{studentStatus}}\",\"coursesTaken\":{{coursesTaken}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Student setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Student setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/courses/{{setupCourseID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"prerequisites\":{{prerequisites}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Course setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Course setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{{requestBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration: expected HTTP status', function () { pm.response.to.have.status(Number(pm.variables.get('expectedStatus'))); });",
+                  "pm.test('Registration: expected result and numeric ID on success', function () { var body = pm.response.json(); pm.expect(body.result).to.eql(pm.variables.get('expectedResult')); if (body.result === 'OK') pm.expect(body.registrationID).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "10 Хязгаар — courseID талбар дутуу",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.variables.set('setupStudentID', \"B231234573\");",
+              "pm.variables.set('studentStatus', \"active\");",
+              "pm.variables.set('coursesTaken', \"[]\");",
+              "pm.variables.set('setupCourseID', \"CS408\");",
+              "pm.variables.set('prerequisites', \"[]\");",
+              "pm.variables.set('requestBody', \"{\\\"studentID\\\":\\\"B231234573\\\"}\");",
+              "pm.variables.set('expectedStatus', \"400\");",
+              "pm.variables.set('expectedResult', \"ERROR_BAD_REQUEST\");"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Setup student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/students/{{setupStudentID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"{{studentStatus}}\",\"coursesTaken\":{{coursesTaken}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Student setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Student setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/courses/{{setupCourseID}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"prerequisites\":{{prerequisites}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Course setup: HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Course setup: result OK', function () { pm.expect(pm.response.json().result).to.eql('OK'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{{requestBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration: expected HTTP status', function () { pm.response.to.have.status(Number(pm.variables.get('expectedStatus'))); });",
+                  "pm.test('Registration: expected result and numeric ID on success', function () { var body = pm.response.json(); pm.expect(body.result).to.eql(pm.variables.get('expectedResult')); if (body.result === 'OK') pm.expect(body.registrationID).to.be.a('number'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

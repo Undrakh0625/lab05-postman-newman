@@ -32,7 +32,7 @@ FAIL collection нь амжилттай registration-ийн хүлээгдэх H
 npx newman run lab05-collection.json 2>&1 | tee results/newman-down.txt
 ```
 
-zsh дээр pipeline-ийн жинхэнэ exit code-ийг `tee`-ийн дараа `echo "exit=${PIPESTATUS[1]}"` гэж тэмдэглэж болно. Энэ системд PASS `0`, FAIL `1`, DOWN `1` гарах ёстой.
+macOS-ийн zsh дээр pipeline-ийн жинхэнэ exit code-ийг `tee`-ийн дараа `echo "exit=${pipestatus[1]}"` гэж тэмдэглэж болно. Энэ системд PASS `0`, FAIL `1`, DOWN `1` гарах ёстой.
 
 ## Тест дизайны 5 алхам
 
@@ -70,7 +70,7 @@ zsh дээр pipeline-ийн жинхэнэ exit code-ийг `tee`-ийн дар
 
 - `results/newman-pass.txt`: **30 request; 60 assertion, 0 fail; exit `0`**.
 - `results/newman-fail.txt`: **60 assertion, 1 fail; exit `1`**. Нэг буруу HTTP status oracle илэрсэн.
-- `results/newman-down.txt`: сервер зогссон үед `ECONNREFUSED`; exit `1`. Энэ нь API-ийн хариуны oracle буруу гэсэн үг биш, Newman сервертэй холбогдож чадаагүй интерфейс/холболтын алдаа юм.
+- `results/newman-down.txt`: сервер зогссон үед 30 хүсэлт `ECONNREFUSED`, 60 assertion хариу авч чадалгүй fail болсон; exit `1`. Энэ нь API-ийн хариуны oracle буруу гэсэн үг биш, Newman сервертэй холбогдож чадаагүй интерфейс/холболтын алдаа юм.
 
 ## 8 өгүүлбэртэй дүгнэлт
 

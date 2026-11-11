@@ -1,0 +1,14 @@
+{
+  "name": "lab05-postman-newman",
+  "version": "1.0.0",
+  "description": "Postman and Newman system tests for the Lab 05 registration API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "newman:pass": "newman run lab05-collection.json",
+    "newman:fail": "newman run lab05-collection-fail.json"
+  },
+  "devDependencies": {
+    "newman": "^6.2.3"
+  }
+}
